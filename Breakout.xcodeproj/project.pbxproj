@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		0FF3E8401C640598005EBE54 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E83F1C640598005EBE54 /* AppDelegate.swift */; };
-		0FF3E8421C640598005EBE54 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8411C640598005EBE54 /* ViewController.swift */; };
 		0FF3E8451C640598005EBE54 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0FF3E8431C640598005EBE54 /* Main.storyboard */; };
 		0FF3E8471C640598005EBE54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0FF3E8461C640598005EBE54 /* Assets.xcassets */; };
 		0FF3E84A1C640598005EBE54 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0FF3E8481C640598005EBE54 /* LaunchScreen.storyboard */; };
 		0FF3E8551C640598005EBE54 /* BreakoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8541C640598005EBE54 /* BreakoutTests.swift */; };
 		0FF3E8601C640598005EBE54 /* BreakoutUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E85F1C640598005EBE54 /* BreakoutUITests.swift */; };
+		0FF3E8AB1C641C0D005EBE54 /* BreakoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8AA1C641C0D005EBE54 /* BreakoutViewController.swift */; };
+		0FF3E8AF1C641DBA005EBE54 /* BreakoutBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8AE1C641DBA005EBE54 /* BreakoutBehavior.swift */; };
+		0FF3E8B51C6959C8005EBE54 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8B41C6959C7005EBE54 /* SettingsViewController.swift */; };
+		0FF3E8B71C6998E4005EBE54 /* BreakoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E8B61C6998E4005EBE54 /* BreakoutView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +39,6 @@
 /* Begin PBXFileReference section */
 		0FF3E83C1C640598005EBE54 /* Breakout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Breakout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FF3E83F1C640598005EBE54 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		0FF3E8411C640598005EBE54 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		0FF3E8441C640598005EBE54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0FF3E8461C640598005EBE54 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0FF3E8491C640598005EBE54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +49,10 @@
 		0FF3E85B1C640598005EBE54 /* BreakoutUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BreakoutUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FF3E85F1C640598005EBE54 /* BreakoutUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakoutUITests.swift; sourceTree = "<group>"; };
 		0FF3E8611C640598005EBE54 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0FF3E8AA1C641C0D005EBE54 /* BreakoutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BreakoutViewController.swift; sourceTree = "<group>"; };
+		0FF3E8AE1C641DBA005EBE54 /* BreakoutBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BreakoutBehavior.swift; sourceTree = "<group>"; };
+		0FF3E8B41C6959C7005EBE54 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		0FF3E8B61C6998E4005EBE54 /* BreakoutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BreakoutView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,12 +103,13 @@
 		0FF3E83E1C640598005EBE54 /* Breakout */ = {
 			isa = PBXGroup;
 			children = (
+				0FF3E86D1C640832005EBE54 /* Supporting Files */,
 				0FF3E83F1C640598005EBE54 /* AppDelegate.swift */,
-				0FF3E8411C640598005EBE54 /* ViewController.swift */,
 				0FF3E8431C640598005EBE54 /* Main.storyboard */,
-				0FF3E8461C640598005EBE54 /* Assets.xcassets */,
-				0FF3E8481C640598005EBE54 /* LaunchScreen.storyboard */,
-				0FF3E84B1C640598005EBE54 /* Info.plist */,
+				0FF3E8B61C6998E4005EBE54 /* BreakoutView.swift */,
+				0FF3E8B41C6959C7005EBE54 /* SettingsViewController.swift */,
+				0FF3E8AE1C641DBA005EBE54 /* BreakoutBehavior.swift */,
+				0FF3E8AA1C641C0D005EBE54 /* BreakoutViewController.swift */,
 			);
 			path = Breakout;
 			sourceTree = "<group>";
@@ -123,6 +130,16 @@
 				0FF3E8611C640598005EBE54 /* Info.plist */,
 			);
 			path = BreakoutUITests;
+			sourceTree = "<group>";
+		};
+		0FF3E86D1C640832005EBE54 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0FF3E8461C640598005EBE54 /* Assets.xcassets */,
+				0FF3E8481C640598005EBE54 /* LaunchScreen.storyboard */,
+				0FF3E84B1C640598005EBE54 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,8 +273,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0FF3E8421C640598005EBE54 /* ViewController.swift in Sources */,
+				0FF3E8B71C6998E4005EBE54 /* BreakoutView.swift in Sources */,
 				0FF3E8401C640598005EBE54 /* AppDelegate.swift in Sources */,
+				0FF3E8AF1C641DBA005EBE54 /* BreakoutBehavior.swift in Sources */,
+				0FF3E8AB1C641C0D005EBE54 /* BreakoutViewController.swift in Sources */,
+				0FF3E8B51C6959C8005EBE54 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +504,7 @@
 				0FF3E8661C640598005EBE54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0FF3E8671C640598005EBE54 /* Build configuration list for PBXNativeTarget "BreakoutTests" */ = {
 			isa = XCConfigurationList;
@@ -492,6 +513,7 @@
 				0FF3E8691C640598005EBE54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0FF3E86A1C640598005EBE54 /* Build configuration list for PBXNativeTarget "BreakoutUITests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +522,7 @@
 				0FF3E86C1C640598005EBE54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
