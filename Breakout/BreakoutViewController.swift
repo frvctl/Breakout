@@ -70,12 +70,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   }
 
   //MARK: Outlets
-  @IBOutlet weak var breakoutView: UIView! {
-    didSet {
-      breakoutBehavior.breakoutBehaviorDelegate = self
-    }
-  }
-
+  @IBOutlet weak var breakoutView: UIView! { didSet { breakoutBehavior.breakoutBehaviorDelegate = self } }
   @IBOutlet weak var deathLabel: UIBarButtonItem!
   @IBOutlet weak var scoreLabel: UIBarButtonItem!
 
@@ -84,16 +79,16 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     case .Began:fallthrough
     case .Ended:break
     case .Changed:
-        let translation = sender.translationInView(breakoutView)
-        let newX = paddle.center.x + translation.x
+      let translation = sender.translationInView(breakoutView)
+      let newX = paddle.center.x + translation.x
 
-        if  newX > paddle.bounds.size.width / 2 && newX < breakoutView.bounds.maxX - paddle.bounds.size.width / 2 {
-            paddle.center.x = newX
-            breakoutBehavior.addBarrier(UIBezierPath(roundedRect: paddle.frame, cornerRadius: 20), named: "Paddle") // change to constant name
-            animator.updateItemUsingCurrentState(paddle!)
-        }
-        
-        sender.setTranslation(CGPointZero, inView: breakoutView)
+      if  newX > paddle.bounds.size.width / 2 && newX < breakoutView.bounds.maxX - paddle.bounds.size.width / 2 {
+        paddle.center.x = newX
+        breakoutBehavior.addBarrier(UIBezierPath(roundedRect: paddle.frame, cornerRadius: 20), named: "Paddle") // change to constant name
+        animator.updateItemUsingCurrentState(paddle!)
+      }
+      
+      sender.setTranslation(CGPointZero, inView: breakoutView)
     default: break
     }
   }
@@ -101,9 +96,9 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   @IBAction func moveBall(sender: UITapGestureRecognizer) {
     switch sender.state {
     case .Ended:
-        for ball in balls {
-            breakoutBehavior.pushBall(ball)
-        }
+      for ball in balls {
+        breakoutBehavior.pushBall(ball)
+      }
     default: break
     }
   }
@@ -119,15 +114,14 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     super.viewDidAppear(animated)
 
     if settings.boolForKey("settingsChanged") {
-        removeLayout()
-        layoutGame()
-        settings.setBool(false, forKey: "settingsChanged")
-        showAlert("Paused")
+      removeLayout()
+      layoutGame()
+      settings.setBool(false, forKey: "settingsChanged")
+      showAlert("Paused")
     }else if paused {
-        showAlert("Paused")
+      showAlert("Paused")
     } else if !gameStarted {
-        layoutGame()
-        showAlert("Main")
+      layoutGame()
     }
   }
 
@@ -146,29 +140,28 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   func showAlert(toShow: String) {
     switch toShow {
     case "Paused":
-      let alert = UIAlertController(title: "Game Paused", message: "Game state changed", preferredStyle: UIAlertControllerStyle.Alert)
+      let alert = UIAlertController(title: "Game Paused",
+        message: "Game state changed",
+        preferredStyle: UIAlertControllerStyle.Alert
+      )
       alert.addAction(UIAlertAction(title: "Play", style: UIAlertActionStyle.Cancel, handler: { (action: UIAlertAction) -> Void in
-          self.breakoutBehavior.resumeGame(self.balls)
-          self.paused = false
-      }))
-      presentViewController(alert, animated: true, completion: nil)
-    case "Main":
-      let alert = UIAlertController(title: "Welcome to Breakout", message: "Destroy all Bricks", preferredStyle: UIAlertControllerStyle.Alert)
-      alert.addAction(UIAlertAction(title: "Go To Settings", style: UIAlertActionStyle.Default, handler: {(action: UIAlertAction) -> Void in
-          self.tabBarController?.selectedIndex = 1
-      }))
-      alert.addAction(UIAlertAction(title: "Start Game", style: UIAlertActionStyle.Default, handler: {(action: UIAlertAction) -> Void in
-          self.breakoutBehavior.startBalls(self.balls)
-          self.paused = false
-          self.gameStarted = true
+        self.breakoutBehavior.resumeGame(self.balls)
+        self.paused = false
       }))
       presentViewController(alert, animated: true, completion: nil)
     case "Won":
-      let alert = UIAlertController(title: "Congrats You Win", message: "All the bricks have been destroyed", preferredStyle: UIAlertControllerStyle.Alert)
-      alert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Cancel, handler: { (action: UIAlertAction) -> Void in
+      let alert = UIAlertController(title: "Congrats You Win",
+        message: "All the bricks have been destroyed",
+        preferredStyle: UIAlertControllerStyle.Alert
+      )
+      
+      alert.addAction(UIAlertAction(title: "Restart",
+        style: UIAlertActionStyle.Cancel,
+        handler: { (action: UIAlertAction) -> Void in
           self.paused = false
           self.restartGame()
-      }))
+        })
+      )
       presentViewController(alert, animated: true, completion: nil)
     default: break
     }
@@ -202,7 +195,8 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
 
   func addPaddleToLayout() {
     let paddleSize = CGSize(width: Constants.PaddleWidth, height: Constants.PaddleWidth)
-    let frame = CGRect(origin: CGPoint(x: breakoutView.bounds.midX - paddleSize.width/2, y: breakoutView.bounds.midY + breakoutView.bounds.midY/2), size: paddleSize)
+    let frame = CGRect(origin: CGPoint(x: breakoutView.bounds.midX - paddleSize.width/2,
+      y: breakoutView.bounds.midY + breakoutView.bounds.midY/2), size: paddleSize)
     let paddleView = UIView(frame: frame)
     paddleView.backgroundColor = UIColor.redColor()
     let path = UIBezierPath(rect: paddleView.frame)
@@ -234,8 +228,8 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     if special {
       var x = 0
       while x < (Constants.NumberOfRows * bricksPerRow) {
-          x += Int.random(1, max: 5)
-          specialBrickIndexes.append(x)
+        x += Int.random(1, max: 5)
+        specialBrickIndexes.append(x)
       }
     }
       
@@ -265,19 +259,19 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
 
   func removeLayout() {
     if paddle != nil{
-        breakoutBehavior.removePaddle(paddle)
+      breakoutBehavior.removePaddle(paddle)
     }
     removeAllBalls()
     var brNum = 0
     for brick in bricks {
-        breakoutBehavior.removeBrick(brick, name: "brick\(brNum)")
-        brNum++
+      breakoutBehavior.removeBrick(brick, name: "brick\(brNum)")
+      brNum++
     }
   }
 
   func removeAllBalls() {
     for ball in balls {
-        breakoutBehavior.removeBall(ball)
+      breakoutBehavior.removeBall(ball)
     }
   
     balls.removeAll()
@@ -288,7 +282,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     layoutGame()
   
     if !paused {
-        breakoutBehavior.startBalls(balls)
+      breakoutBehavior.startBalls(balls)
     }
   }
 
@@ -311,10 +305,10 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
 
   func gameOver(playerWon: Bool) {
     if playerWon {
-        breakoutBehavior.pauseGame(balls)
-        self.paused = true
-        self.gameStarted = false
-        showAlert("Won")
+      breakoutBehavior.pauseGame(balls)
+      self.paused = true
+      self.gameStarted = false
+      showAlert("Won")
     }
   }
 
@@ -328,11 +322,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
 }
 
   //MARK: Extensions
-private extension CGFloat {
-  static func random(max: Int) -> CGFloat {
-    return CGFloat(arc4random() % UInt32(max))
-  }
-}
+private extension CGFloat { static func random(max: Int) -> CGFloat { return CGFloat(arc4random() % UInt32(max)) }}
 
 private extension UIColor {
   class var random: UIColor {
@@ -349,18 +339,10 @@ private extension UIColor {
 
 public extension Int {
   /// Returns a random Int point number between 0 and Int.max.
-  public static var random: Int {
-    get {
-        return Int.random(Int.max)
-    }
-  }
+  public static var random: Int { get { return Int.random(Int.max) } }
 
-  public static func random(n: Int) -> Int {
-    return Int(arc4random_uniform(UInt32(n)))
-  }
+  public static func random(n: Int) -> Int { return Int(arc4random_uniform(UInt32(n))) }
 
-  public static func random(min: Int, max: Int) -> Int {
-    return Int.random(max - min + 1) + min
-    //Int(arc4random_uniform(UInt32(max - min + 1))) + min }
-  }
+  //returns random int between range
+  public static func random(min: Int, max: Int) -> Int { return Int.random(max - min + 1) + min }
 }

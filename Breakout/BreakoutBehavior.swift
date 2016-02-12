@@ -32,15 +32,15 @@ class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
       if let iden = (identifier! as? String) {
         switch iden {
         case "Paddle":
-            let ran = Int.random(-200, max: 200)
-            if ballBehavior.linearVelocityForItem(item).y < -500 {
-                ballBehavior.addLinearVelocity(CGPoint(x: ran, y: 300), forItem: item)
-            } else {
-                ballBehavior.addLinearVelocity(CGPoint(x: ran, y: -150), forItem: item)
-            }
+          let ran = Int.random(-200, max: 200)
+          if ballBehavior.linearVelocityForItem(item).y < -500 {
+            ballBehavior.addLinearVelocity(CGPoint(x: ran, y: 300), forItem: item)
+          } else {
+            ballBehavior.addLinearVelocity(CGPoint(x: ran, y: -150), forItem: item)
+          }
         case "Bottom":
-            breakoutBehaviorDelegate?.resetBall((item as? UIView)!)
-            breakoutBehaviorDelegate?.setDeath(deathCnt++)
+          breakoutBehaviorDelegate?.resetBall((item as? UIView)!)
+          breakoutBehaviorDelegate?.setDeath(deathCnt++)
         default:break
         }
       }
