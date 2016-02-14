@@ -80,7 +80,7 @@ class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
         animations: { brick.alpha = 0.0 },
         completion: { (success) -> Void in
           if success {
-            self.removeBrick(brick, name: iden)
+            self.removeBrick(brick, name: iden, remove: true)
             self.collider.removeBoundaryWithIdentifier(iden)
             self.breakoutBehaviorDelegate?.setScore(self.score)
             if self.bricks.isEmpty {
@@ -211,8 +211,11 @@ class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
     collider.removeBoundaryWithIdentifier(name)
   }
   
-  func removeBrick(brick: UIView, name: String) {
-    bricks.removeValueForKey(name)
+  func removeBrick(brick: UIView, name: String, remove: Bool) {
+    if remove {
+      bricks.removeValueForKey(name)
+    }
+    
     removeBarrier(name)
     brick.removeFromSuperview()
   }

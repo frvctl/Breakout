@@ -20,12 +20,18 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   var num = 0
   var paused = false
   var gameStarted = false
-    
+  
+  var timer = NSTimer()
+  
   struct Constants {
     static let NumberOfRows = 2
+    
     static let BrickHeight: CGFloat = 25
+    
     static let PaddleHeight: Int = 25
     static let PaddleWidth: Int = 100
+    static let PaddleCornerRadius: CGFloat = 300
+    static let PaddleIdentifier: String = "Paddle"
   }
     
   lazy var animator: UIDynamicAnimator = {
@@ -79,16 +85,21 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     case .Began:fallthrough
     case .Ended:break
     case .Changed:
-      let translation = sender.translationInView(breakoutView)
-      let newX = paddle.center.x + translation.x
-
-      if  newX > paddle.bounds.size.width / 2 && newX < breakoutView.bounds.maxX - paddle.bounds.size.width / 2 {
-        paddle.center.x = newX
-        breakoutBehavior.addBarrier(UIBezierPath(roundedRect: paddle.frame, cornerRadius: 20), named: "Paddle") // change to constant name
-        animator.updateItemUsingCurrentState(paddle!)
+      if gameStarted && !paused{
+        let translation = sender.translationInView(breakoutView)
+        let newX = paddle.center.x + translation.x
+        
+        if  newX > paddle.bounds.size.width / 2 && newX < breakoutView.bounds.maxX - paddle.bounds.size.width / 2 {
+          paddle.center.x = newX
+          breakoutBehavior.addBarrier(UIBezierPath(roundedRect: paddle.frame,
+            cornerRadius: Constants.PaddleCornerRadius),
+            named: Constants.PaddleIdentifier
+          )
+          animator.updateItemUsingCurrentState(paddle!)
+        }
+        
+        sender.setTranslation(CGPointZero, inView: breakoutView)
       }
-      
-      sender.setTranslation(CGPointZero, inView: breakoutView)
     default: break
     }
   }
@@ -110,21 +121,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     animator.addBehavior(breakoutBehavior)
   }
 
-  override func viewDidAppear(animated: Bool) {
-    super.viewDidAppear(animated)
-
-    if settings.boolForKey("settingsChanged") {
-      removeLayout()
-      layoutGame()
-      settings.setBool(false, forKey: "settingsChanged")
-      showAlert("Paused")
-    }else if paused {
-      showAlert("Paused")
-    } else if !gameStarted {
-      layoutGame()
-    }
-  }
-
   override func viewWillDisappear(animated: Bool) {
     super.viewWillDisappear(animated)
     
@@ -132,9 +128,23 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     breakoutBehavior.pauseGame(balls)
   }
 
-  override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
-    removeLayout()
-    layoutGame()
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+  
+    
+    if settings.boolForKey("settingsChanged") {
+      layoutGame(false)
+      settings.setBool(false, forKey: "settingsChanged")
+      showAlert("Paused")
+    } else if paused {
+      showAlert("Paused")
+    } else if !gameStarted {
+      layoutGame(false)
+    } else {
+      layoutGame(true) // need to layout the views based on the new size instead
+    }
   }
 
   func showAlert(toShow: String) {
@@ -159,7 +169,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
         style: UIAlertActionStyle.Cancel,
         handler: { (action: UIAlertAction) -> Void in
           self.paused = false
-          self.restartGame()
+          self.layoutGame(false)
         })
       )
       presentViewController(alert, animated: true, completion: nil)
@@ -194,28 +204,58 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   }
 
   func addPaddleToLayout() {
-    let paddleSize = CGSize(width: Constants.PaddleWidth, height: Constants.PaddleWidth)
+    let paddleSize = CGSize(width: Constants.PaddleWidth, height: Constants.PaddleHeight)
     let frame = CGRect(origin: CGPoint(x: breakoutView.bounds.midX - paddleSize.width/2,
       y: breakoutView.bounds.midY + breakoutView.bounds.midY/2), size: paddleSize)
     let paddleView = UIView(frame: frame)
     paddleView.backgroundColor = UIColor.redColor()
-    let path = UIBezierPath(rect: paddleView.frame)
+    let path = UIBezierPath(roundedRect: paddleView.frame, cornerRadius: Constants.PaddleCornerRadius)
     paddle = paddleView
     breakoutBehavior.addBarrier(path, named: "Paddle")
     breakoutBehavior.addPaddle(paddleView)
   }
 
-  func layoutGame() {
-    let bottom = UIBezierPath()
+  func layoutGame(orientationChanged: Bool) {
+    gameStarted = true
 
+    if orientationChanged {
+      print("orientation...")
+      print(breakoutView.bounds.size.width)
+      breakoutBehavior.removePaddle(paddle)
+      bricks.removeAll()
+      var origin: CGFloat = 0
+      for brick in breakoutBehavior.bricks {
+        brick.1.frame.size = brickSize
+        if brick.0 == "brick0" {
+          origin = brick.1.frame.origin.x
+          breakoutBehavior.addBrick(brick.1, name: "brick\(brick.0)")
+        }
+        origin += brick.1.bounds.maxX + (breakoutView.bounds.size.width - (brickSize.width * CGFloat(bricksPerRow))) / CGFloat(bricksPerRow)
+        brick.1.frame.origin.x = origin
+        bricks.append(brick.1)
+        breakoutBehavior.addBrick(brick.1, name: "brick\(brick.0)")
+      }
+      
+    } else {
+      removeLayout()
+      layoutBricks()
+      
+    }
+    
+    
+    addBottomBarrier()
+    addPaddleToLayout()
+    addBallsToLayout()
+    startBalls()
+  }
+  
+  func addBottomBarrier() {
+    let bottom = UIBezierPath()
+    
     bottom.moveToPoint(CGPoint(x: breakoutView.bounds.origin.x, y: breakoutView.frame.size.height))
     bottom.addLineToPoint(CGPoint(x: breakoutView.frame.maxX, y: breakoutView.frame.size.height))
     
     breakoutBehavior.addBarrier(bottom, named: "Bottom")
-
-    layoutBricks()
-    addPaddleToLayout()
-    addBallsToLayout()
   }
 
   func layoutBricks() {
@@ -223,7 +263,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     let verticalSeperation = Int(Constants.BrickHeight + 3)
     var specialBrickIndexes = [Int]()
     num = 0
-      
       
     if special {
       var x = 0
@@ -261,12 +300,16 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     if paddle != nil{
       breakoutBehavior.removePaddle(paddle)
     }
+    
     removeAllBalls()
+    
     var brNum = 0
     for brick in bricks {
-      breakoutBehavior.removeBrick(brick, name: "brick\(brNum)")
+      breakoutBehavior.removeBrick(brick, name: "brick\(brNum)", remove: true)
       brNum++
     }
+    
+    bricks.removeAll()
   }
 
   func removeAllBalls() {
@@ -277,15 +320,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     balls.removeAll()
   }
 
-  func restartGame() {
-    removeLayout()
-    layoutGame()
-  
-    if !paused {
-      breakoutBehavior.startBalls(balls)
-    }
-  }
-
   var ballsRemoved = 1
 
   func resetBall(ball: UIView) {
@@ -294,13 +328,21 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
       balls.removeAtIndex(balls.indexOf({$0 === ball})!)
       breakoutBehavior.removeBall(ball)
     } else if numberOfBalls == 1 || ballsRemoved == numberOfBalls {
+      paused = true
       ballsRemoved = 1
       removeAllBalls()
       addBallsToLayout()
-      if !paused {
-        breakoutBehavior.startBalls(balls)
-      }
+      startTimer()
     }
+  }
+  
+  func startTimer() {
+    timer = NSTimer.scheduledTimerWithTimeInterval(2.0, target: self, selector: "startBalls", userInfo: nil, repeats: false)
+  }
+  
+  func startBalls() {
+    paused = false
+    breakoutBehavior.startBalls(balls)
   }
 
   func gameOver(playerWon: Bool) {

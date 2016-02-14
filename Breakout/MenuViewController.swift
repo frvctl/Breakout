@@ -8,14 +8,21 @@
 
 import UIKit
 
-class MenuViewController: UIViewController {
+class MenuViewController: UIViewController, UITextFieldDelegate {
   let defaults = NSUserDefaults.standardUserDefaults()
   
-  @IBAction func playGame(sender: UIButton) { performSegueWithIdentifier("Play", sender: self) }
+  @IBAction func playGame(sender: UIButton) {
+    print(defaults.stringForKey("username"))
+    performSegueWithIdentifier("Play", sender: self)
+  }
   
-  @IBAction func goToSettings(sender: UIButton) { performSegueWithIdentifier("Settings", sender: self) }
+  @IBAction func goToSettings(sender: UIButton) {
+    performSegueWithIdentifier("Settings", sender: self)
+  }
   
-  @IBAction func playerHistory(sender: UIButton) { performSegueWithIdentifier("User", sender: self) }
+  @IBAction func playerHistory(sender: UIButton) {
+    performSegueWithIdentifier("User", sender: self)
+  }
   
   @IBOutlet weak var usernameField: UITextField! {
     didSet {
@@ -24,6 +31,19 @@ class MenuViewController: UIViewController {
       }
     }
   }
+
+  func textFieldShouldReturn(textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+    defaults.setObject(usernameField.text!, forKey: "username")
+    return true
+  }
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    usernameField.delegate = self;
+  }
+
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if let identifier = segue.identifier {
@@ -33,19 +53,17 @@ class MenuViewController: UIViewController {
             bvc.selectedIndex = 0
           case "Settings":
             bvc.selectedIndex = 1
-              
-            if let tvc = bvc.selectedViewController as? UINavigationController {
-              let svc = tvc.viewControllers[0] as? SettingsViewController
-              print(svc)
-            }
-          case "User":
-            bvc.selectedIndex = 2
-        default: break
+          default: break
         }
       }
     }
   }
 }
+
+//            if let tvc = bvc.selectedViewController as? UINavigationController {
+//              let svc = tvc.viewControllers[0] as? SettingsViewController
+//              print(svc)
+//            }
 
         
     

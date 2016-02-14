@@ -8,17 +8,17 @@
 
 import UIKit
 
-class SettingsViewController: UITableViewController {
+class SettingsViewController: UITableViewController, UITextFieldDelegate {
   let defaults = NSUserDefaults.standardUserDefaults()
   
   var settings = [
     "bricksPerRow": 10,
-    "difficulty": 1,
     "specialBricks": false,
     "numberOfBalls": 1,
     "ballBounciness": 0.5,
     "settingsChanged": false,
-    "username": ""
+    "username": "",
+    "difficulty": 1
   ]
   
   func setDefaults() {
@@ -45,12 +45,19 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var ballSegmentedControl: UISegmentedControl! {
     didSet { ballSegmentedControl.selectedSegmentIndex = defaults.integerForKey("numberOfBalls") - 1 }
   }
-    
+  
+  @IBOutlet weak var usernameField: UITextField! {
+    didSet { usernameField.text = defaults.stringForKey("username") }
+  }
+  @IBOutlet weak var difficultySlider: UISlider! {
+    didSet { difficultySlider.value = defaults.floatForKey("difficulty") }
+  }
+  
   //MARK: Settings Actions
   @IBAction func brickStepper(sender: UIStepper) {
     let val = Int(sender.value)
     defaults.setInteger(val, forKey: "bricksPerRow")
-    defaults.setBool(true, forKey: "settingsChanged")
+    settingsChanged()
     settings["bricksPerRow"] = val
     brickLabel.text = String(val)
   }
@@ -65,7 +72,7 @@ class SettingsViewController: UITableViewController {
       settings["specialBricks"] = false
     }
     
-    defaults.setBool(true, forKey: "settingsChanged")
+    settingsChanged()
   }
   
   @IBAction func numberOfBalls(sender: UISegmentedControl) {
@@ -84,17 +91,37 @@ class SettingsViewController: UITableViewController {
     default: break
     }
     
-    defaults.setBool(true, forKey: "settingsChanged")
+    settingsChanged()
   }
   
   @IBAction func ballBouncinessSlider(sender: UISlider) {
     defaults.setFloat(sender.value, forKey: "ballBounciness")
+    settings["ballBounciness"] = sender.value
+    settingsChanged()
+  }
+  
+  @IBAction func difficultySlider(sender: UISlider) {
+    defaults.setFloat(sender.value, forKey: "difficulty")
+    settings["difficulty"] = sender.value
+    settingsChanged()
+  }
+  
+  func textFieldShouldReturn(textField: UITextField) -> Bool {
+    usernameField.resignFirstResponder()
+    defaults.setObject(usernameField.text!, forKey: "username")
+    defaults.setBool(true, forKey: "settingsChanged")
+    settings["username"] = usernameField.text!
+    return true
+  }
+  
+  func settingsChanged() {
     defaults.setBool(true, forKey: "settingsChanged")
   }
   
   override func viewDidAppear(animated: Bool) {
     super.viewDidAppear(animated)
     
+    usernameField.delegate = self
     setDefaults()
   }
 }

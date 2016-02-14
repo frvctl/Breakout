@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0F0505D41C6D2D3000888E9C /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0505D31C6D2D3000888E9C /* MenuViewController.swift */; };
-		0F0505D61C6D54AF00888E9C /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0505D51C6D54AF00888E9C /* UserViewController.swift */; };
 		0FF3E8401C640598005EBE54 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF3E83F1C640598005EBE54 /* AppDelegate.swift */; };
 		0FF3E8451C640598005EBE54 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0FF3E8431C640598005EBE54 /* Main.storyboard */; };
 		0FF3E8471C640598005EBE54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0FF3E8461C640598005EBE54 /* Assets.xcassets */; };
@@ -39,7 +38,6 @@
 
 /* Begin PBXFileReference section */
 		0F0505D31C6D2D3000888E9C /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
-		0F0505D51C6D54AF00888E9C /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
 		0FF3E83C1C640598005EBE54 /* Breakout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Breakout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FF3E83F1C640598005EBE54 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0FF3E8441C640598005EBE54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -109,7 +107,6 @@
 				0FF3E83F1C640598005EBE54 /* AppDelegate.swift */,
 				0FF3E8431C640598005EBE54 /* Main.storyboard */,
 				0F0505D31C6D2D3000888E9C /* MenuViewController.swift */,
-				0F0505D51C6D54AF00888E9C /* UserViewController.swift */,
 				0FF3E8B41C6959C7005EBE54 /* SettingsViewController.swift */,
 				0FF3E8AE1C641DBA005EBE54 /* BreakoutBehavior.swift */,
 				0FF3E8AA1C641C0D005EBE54 /* BreakoutViewController.swift */,
@@ -213,6 +210,7 @@
 				TargetAttributes = {
 					0FF3E83B1C640598005EBE54 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 5W5A5T37PY;
 					};
 					0FF3E84F1C640598005EBE54 = {
 						CreatedOnToolsVersion = 7.2;
@@ -276,7 +274,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F0505D61C6D54AF00888E9C /* UserViewController.swift in Sources */,
 				0F0505D41C6D2D3000888E9C /* MenuViewController.swift in Sources */,
 				0FF3E8401C640598005EBE54 /* AppDelegate.swift in Sources */,
 				0FF3E8AF1C641DBA005EBE54 /* BreakoutBehavior.swift in Sources */,
@@ -423,10 +420,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Breakout/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = come.vreest.Breakout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -434,10 +434,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Breakout/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = come.vreest.Breakout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
