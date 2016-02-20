@@ -21,6 +21,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   var num = 0
   var paused = false
   var gameStarted = false
+  var alertShown = false
   
   var timer = NSTimer()
   
@@ -31,7 +32,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     
     static let PaddleHeight: Int = 25
     static let PaddleWidth: Int = 100
-    static let PaddleCornerRadius: CGFloat = 300
+    static let PaddleCornerRadius: CGFloat = 150
     static let PaddleIdentifier: String = "Paddle"
   }
     
@@ -121,6 +122,18 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     
     animator.addBehavior(breakoutBehavior)
   }
+  
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+    
+    if settings.boolForKey("settingsChanged") {
+      layoutGame(false)
+      settings.setBool(false, forKey: "settingsChanged")
+      showAlert("Paused")
+    } else if paused {
+      showAlert("Paused")
+    }
+  }
 
   override func viewWillDisappear(animated: Bool) {
     super.viewWillDisappear(animated)
@@ -134,13 +147,8 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    if settings.boolForKey("settingsChanged") {
-      layoutGame(false)
-      settings.setBool(false, forKey: "settingsChanged")
-      showAlert("Paused")
-    } else if paused {
-      showAlert("Paused")
-    } else if !gameStarted{
+    
+    if !gameStarted && !paused{
       layoutGame(false)
     } else if reset {
       layoutGame(true)
@@ -154,31 +162,40 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   }
 
   func showAlert(toShow: String) {
-    switch toShow {
-    case "Paused":
-      let alert = UIAlertController(title: "Game Paused",
-        message: "Game state changed",
-        preferredStyle: UIAlertControllerStyle.Alert
-      )
-      alert.addAction(UIAlertAction(title: "Play", style: UIAlertActionStyle.Cancel, handler: { (action: UIAlertAction) -> Void in
-        self.breakoutBehavior.resumeGame(self.balls)
-        self.paused = false
-      }))
-      presentViewController(alert, animated: true, completion: nil)
-    case "Won":
-      let alert = UIAlertController(title: "Congrats You Win",
-        message: "All the bricks have been destroyed",
-        preferredStyle: UIAlertControllerStyle.Alert
-      )
-      alert.addAction(UIAlertAction(title: "Restart",
-        style: UIAlertActionStyle.Cancel,
-        handler: { (action: UIAlertAction) -> Void in
+    if !alertShown {
+      switch toShow {
+      case "Paused":
+        alertShown = true
+
+        timer.invalidate()
+        let alert = UIAlertController(title: "Game Paused",
+          message: "Switched back from settings",
+          preferredStyle: UIAlertControllerStyle.Alert
+        )
+        alert.addAction(UIAlertAction(title: "Play", style: UIAlertActionStyle.Cancel, handler: { (action: UIAlertAction) -> Void in
+          self.breakoutBehavior.resumeGame(self.balls)
           self.paused = false
-          self.layoutGame(false)
+          self.alertShown = false
+        }))
+        presentViewController(alert, animated: true, completion: nil)
+      case "Won":
+        alertShown = true
+
+        let alert = UIAlertController(title: "Congrats You Win",
+          message: "All the bricks have been destroyed",
+          preferredStyle: UIAlertControllerStyle.Alert
+        )
+        alert.addAction(UIAlertAction(title: "Restart",
+          style: UIAlertActionStyle.Cancel,
+          handler: { (action: UIAlertAction) -> Void in
+            self.paused = false
+            self.layoutGame(false)
+            self.alertShown = false
         })
-      )
-      presentViewController(alert, animated: true, completion: nil)
-    default: break
+        )
+        presentViewController(alert, animated: true, completion: nil)
+      default: break
+      }
     }
   }
 
@@ -234,7 +251,10 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     addBottomBarrier()
     addPaddleToLayout()
     addBallsToLayout()
-    startBalls()
+
+    if !paused {
+      startBalls()
+    }
   }
   
   func addBottomBarrier() {

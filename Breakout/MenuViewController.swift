@@ -20,10 +20,6 @@ class MenuViewController: UIViewController, UITextFieldDelegate {
     performSegueWithIdentifier("Settings", sender: self)
   }
   
-  @IBAction func playerHistory(sender: UIButton) {
-    performSegueWithIdentifier("User", sender: self)
-  }
-  
   @IBOutlet weak var usernameField: UITextField! {
     didSet {
       if defaults.stringForKey("username") != "" {
@@ -60,11 +56,4 @@ class MenuViewController: UIViewController, UITextFieldDelegate {
   }
 }
 
-//            if let tvc = bvc.selectedViewController as? UINavigationController {
-//              let svc = tvc.viewControllers[0] as? SettingsViewController
-//              print(svc)
-//            }
-
-        
-    
 
