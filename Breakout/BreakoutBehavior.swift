@@ -75,7 +75,7 @@ class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
       score += scoreInc
       
       UIView.transitionWithView(brick,
-        duration: 1.0,
+        duration: 0.25,
         options: UIViewAnimationOptions.TransitionCurlUp,
         animations: { brick.alpha = 0.0 },
         completion: { (success) -> Void in
@@ -218,6 +218,14 @@ class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
     
     removeBarrier(name)
     brick.removeFromSuperview()
+  }
+  
+  func removeAllBricks() {
+    for brick in bricks {
+      brick.1.removeFromSuperview()
+    }
+    
+    bricks.removeAll()
   }
   
   func removePaddle(paddle: UIView) {

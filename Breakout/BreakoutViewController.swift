@@ -6,12 +6,13 @@
 //  Copyright © 2016 vreest. All rights reserved.
 //
 
+// Figure out how to layout bricks based on the bricks in the gamecomponents
+
 import UIKit
 
 class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, BreakoutBehaviorDelegate {
   private var paddle: UIView!
   private var balls = [UIView!]()
-  private var bricks = [UIView!]()
   private var lastBrickView: UIView!
     
   let breakoutBehavior = BreakoutBehavior()
@@ -24,7 +25,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   var timer = NSTimer()
   
   struct Constants {
-    static let NumberOfRows = 2
+    static let NumberOfRows = 4
     
     static let BrickHeight: CGFloat = 25
     
@@ -128,23 +129,28 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     breakoutBehavior.pauseGame(balls)
   }
 
+  var originViewSize: CGSize = CGSize(width: 0, height: 0)
+  var reset = false
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    
-  
-    
     if settings.boolForKey("settingsChanged") {
       layoutGame(false)
       settings.setBool(false, forKey: "settingsChanged")
       showAlert("Paused")
     } else if paused {
       showAlert("Paused")
-    } else if !gameStarted {
+    } else if !gameStarted{
       layoutGame(false)
+    } else if reset {
+      layoutGame(true)
     } else {
-      layoutGame(true) // need to layout the views based on the new size instead
+      addBottomBarrier()
     }
+  }
+  
+  override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+    reset = true
   }
 
   func showAlert(toShow: String) {
@@ -164,7 +170,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
         message: "All the bricks have been destroyed",
         preferredStyle: UIAlertControllerStyle.Alert
       )
-      
       alert.addAction(UIAlertAction(title: "Restart",
         style: UIAlertActionStyle.Cancel,
         handler: { (action: UIAlertAction) -> Void in
@@ -182,10 +187,9 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     let frame = CGRect(origin: brickLoc, size: brickSize)
     let brickView = UIView(frame: frame)
     brickView.backgroundColor = color
-    bricks.append(brickView)
 
     let path = UIBezierPath(rect: brickView.frame)
-    breakoutBehavior.addBarrier(path, named: "brick\(num)")
+    breakoutBehavior.addBarrier(path, named: "\(num)")
 
     return brickView
   }
@@ -215,34 +219,18 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     breakoutBehavior.addPaddle(paddleView)
   }
 
-  func layoutGame(orientationChanged: Bool) {
+  func layoutGame(reposition: Bool) {
     gameStarted = true
+    
+    removeLayout(reposition)
 
-    if orientationChanged {
-      print("orientation...")
-      print(breakoutView.bounds.size.width)
-      breakoutBehavior.removePaddle(paddle)
-      bricks.removeAll()
-      var origin: CGFloat = 0
-      for brick in breakoutBehavior.bricks {
-        brick.1.frame.size = brickSize
-        if brick.0 == "brick0" {
-          origin = brick.1.frame.origin.x
-          breakoutBehavior.addBrick(brick.1, name: "brick\(brick.0)")
-        }
-        origin += brick.1.bounds.maxX + (breakoutView.bounds.size.width - (brickSize.width * CGFloat(bricksPerRow))) / CGFloat(bricksPerRow)
-        brick.1.frame.origin.x = origin
-        bricks.append(brick.1)
-        breakoutBehavior.addBrick(brick.1, name: "brick\(brick.0)")
-      }
-      
+    if reposition {
+      resetBricksForOrientationChange()
     } else {
-      removeLayout()
+      originViewSize = breakoutView.bounds.size
       layoutBricks()
-      
     }
-    
-    
+   
     addBottomBarrier()
     addPaddleToLayout()
     addBallsToLayout()
@@ -252,10 +240,34 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   func addBottomBarrier() {
     let bottom = UIBezierPath()
     
-    bottom.moveToPoint(CGPoint(x: breakoutView.bounds.origin.x, y: breakoutView.frame.size.height))
-    bottom.addLineToPoint(CGPoint(x: breakoutView.frame.maxX, y: breakoutView.frame.size.height))
-    
+    bottom.moveToPoint(CGPoint(x: breakoutView.bounds.origin.x, y: breakoutView.bounds.size.height))
+    bottom.addLineToPoint(CGPoint(x: breakoutView.bounds.maxX, y: breakoutView.bounds.size.height))
     breakoutBehavior.addBarrier(bottom, named: "Bottom")
+  }
+  
+  func resetBricksForOrientationChange() {
+    reset = false
+
+    let bricks = breakoutBehavior.bricks
+    let totBricks = bricksPerRow * Constants.NumberOfRows
+
+    var originX: CGFloat = 0
+    
+    for brick in 0...totBricks {
+      if originX + brickSize.width > breakoutView.frame.size.width {
+        originX = 0
+      }
+
+      if let br = bricks["\(brick)"] {
+        br!.frame.size = brickSize
+        br!.frame.origin.x = originX
+        breakoutBehavior.addBarrier(UIBezierPath(rect: br!.frame), named: "\(brick)")
+        lastBrickView = br!
+        originX += lastBrickView.bounds.maxX + 1
+      }
+    }
+
+    breakoutBehavior.bricks = bricks
   }
 
   func layoutBricks() {
@@ -287,7 +299,7 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
             lastBrickView = addBrickToLayout(CGPoint(x: brickOriginX, y: CGFloat(brickOriginY)), color: UIColor.blueColor())
         }
               
-        breakoutBehavior.addBrick(lastBrickView, name: "brick\(num)")
+        breakoutBehavior.addBrick(lastBrickView, name: "\(num)")
             
         brickOriginX += lastBrickView.bounds.maxX + horizontalSeperation
               
@@ -296,20 +308,16 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
     }
   }
 
-  func removeLayout() {
+  func removeLayout(reposition: Bool) {
     if paddle != nil{
       breakoutBehavior.removePaddle(paddle)
     }
     
     removeAllBalls()
     
-    var brNum = 0
-    for brick in bricks {
-      breakoutBehavior.removeBrick(brick, name: "brick\(brNum)", remove: true)
-      brNum++
+    if !reposition {
+      breakoutBehavior.removeAllBricks()
     }
-    
-    bricks.removeAll()
   }
 
   func removeAllBalls() {
@@ -328,7 +336,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
       balls.removeAtIndex(balls.indexOf({$0 === ball})!)
       breakoutBehavior.removeBall(ball)
     } else if numberOfBalls == 1 || ballsRemoved == numberOfBalls {
-      paused = true
       ballsRemoved = 1
       removeAllBalls()
       addBallsToLayout()
@@ -341,7 +348,6 @@ class BreakoutViewController: UIViewController, UIDynamicAnimatorDelegate, Break
   }
   
   func startBalls() {
-    paused = false
     breakoutBehavior.startBalls(balls)
   }
 
@@ -388,3 +394,5 @@ public extension Int {
   //returns random int between range
   public static func random(min: Int, max: Int) -> Int { return Int.random(max - min + 1) + min }
 }
+
+
